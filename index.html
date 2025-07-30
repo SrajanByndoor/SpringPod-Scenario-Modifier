@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Scenario Modifier Tool</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .main-content {
+            padding: 40px;
+        }
+
+        .section {
+            margin-bottom: 30px;
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+            border: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+        .section h3 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+            font-size: 1.3rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .icon {
+            width: 24px;
+            height: 24px;
+            background: linear-gradient(135deg, #5dade2 0%, #48c9b0 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+
+        textarea {
+            width: 100%;
+            min-height: 200px;
+            padding: 15px;
+            border: 2px solid #e1e8ed;
+            border-radius: 10px;
+            font-size: 14px;
+            line-height: 1.6;
+            resize: vertical;
+            transition: border-color 0.3s ease;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: #5dade2;
+            box-shadow: 0 0 0 3px rgba(93, 173, 226, 0.1);
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e1e8ed;
+            border-radius: 10px;
+            font-size: 14px;
+            transition: border-color 0.3s ease;
+        }
+
+        input[type="text"]:focus {
+            outline: none;
+            border-color: #5dade2;
+            box-shadow: 0 0 0 3px rgba(93, 173, 226, 0.1);
+        }
+
+        .button {
+            background: linear-gradient(135deg, #5dade2 0%, #48c9b0 100%);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+            margin-top: 20px;
+        }
+
+        .button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(93, 173, 226, 0.3);
+        }
+
+        .button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .tag {
+            background: #f8f9fa;
+            border: 2px solid #e9ecef;
+            border-radius: 20px;
+            padding: 8px 15px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .tag:hover {
+            background: #e9ecef;
+        }
+
+        .tag.selected {
+            background: linear-gradient(135deg, #5dade2 0%, #48c9b0 100%);
+            color: white;
+            border-color: #5dade2;
+        }
+
+        .output-section {
+            background: #f8f9fa;
+            border: 2px dashed #dee2e6;
+            min-height: 200px;
+            padding: 20px;
+            border-radius: 10px;
+            font-family: 'Poppins', sans-serif;
+            white-space: pre-wrap;
+            line-height: 1.6;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            color: #6c757d;
+            font-style: italic;
+        }
+
+        .two-column {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+        }
+
+        @media (max-width: 768px) {
+            .two-column {
+                grid-template-columns: 1fr;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .main-content {
+                padding: 20px;
+            }
+        }
+
+        .help-text {
+            font-size: 13px;
+            color: #6c757d;
+            margin-top: 8px;
+            font-style: italic;
+        }
+
+        .example-scenarios {
+            background: #e8f4fd;
+            border-left: 4px solid #4facfe;
+            padding: 15px;
+            margin-top: 15px;
+            border-radius: 0 10px 10px 0;
+        }
+
+        .example-scenarios h4 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+
+        .example-scenarios ul {
+            list-style-type: none;
+            padding-left: 0;
+        }
+
+        .example-scenarios li {
+            padding: 5px 0;
+            color: #495057;
+        }
+
+        .example-scenarios li:before {
+            content: "→ ";
+            color: #4facfe;
+            font-weight: bold;
+        }
+
+        .api-notice {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 20px;
+            color: #856404;
+        }
+
+        .api-notice h4 {
+            margin-bottom: 10px;
+            color: #856404;
+        }
+
+        .prompt-builder {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 15px;
+            margin-top: 15px;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            border: 1px solid #dee2e6;
+        }
+
+        .prompt-builder h4 {
+            font-family: 'Segoe UI', sans-serif;
+            margin-bottom: 10px;
+            color: #495057;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔄 AI Scenario Modifier</h1>
+            <p>Transform scenarios while preserving core messages and lessons</p>
+        </div>
+
+        <div class="main-content">
+            <div class="api-notice">
+                <h4>Info</h4>
+                <p>This tool generates structured prompts that you can use with ChatGPT, Claude, or any AI assistant. Copy the generated prompt and paste it into your preferred AI tool for actual content modification.</p>
+            </div>
+
+            <div class="two-column">
+                <div>
+                    <div class="section">
+                        <h3><span class="icon">1</span>Original Scenario</h3>
+                        <textarea id="originalScenario" placeholder="Paste your original scenario text here."></textarea>
+                        <div class="help-text">Enter the original scenario text that you want to modify</div>
+                    </div>
+
+                    <div class="section">
+                        <h3><span class="icon">2</span>New Scenario Context</h3>
+                        <input type="text" id="newScenario" placeholder="Example: Starting as a new Barkeep, Engineer, Financial analyst etc">
+                        <div class="help-text">Specify the new context/industry you want to adapt the scenario to</div>
+                        
+                        
+                        
+                    </div>
+
+                    <div class="section">
+                        <h3><span class="icon">3</span>Content Rules</h3>
+                        <div class="tags" id="contentRules">
+                            <div class="tag" data-rule="preserve-lessons">Preserve Core Lessons</div>
+                            <div class="tag" data-rule="adapt-examples">Adapt Examples</div>
+                            <div class="tag" data-rule="keep-structure">Keep Structure</div>
+                            <div class="tag" data-rule="maintain-tone">Maintain Tone</div>
+                            <div class="tag" data-rule="update-terminology">Update Terminology</div>
+                        </div>
+                        <div class="help-text">Select which content modification rules to apply</div>
+                    </div>
+
+                    <div class="section">
+                        <h3><span class="icon">4</span>Preserve Unchanged</h3>
+                        <textarea id="preserveText" placeholder="Enter specific sentences or phrases that should remain exactly the same."></textarea>
+                        <div class="help-text">Specify exact text that should not be changed (one per line)</div>
+                    </div>
+                </div>
+
+                <div>
+                    <div class="section">
+                        <h3><span class="icon">5</span>AI Prompt Generator</h3>
+                        <div class="output-section" id="outputSection">
+                            <div class="loading" id="loadingIndicator">
+                                🤔 Generating your custom AI prompt...
+                            </div>
+                            <div id="outputText">Your AI prompt will appear here. Copy it and use with ChatGPT, Claude, or any AI assistant...</div>
+                        </div>
+                        <button class="button" id="generateButton">Generate AI Prompt</button>
+                        <button class="button" id="copyButton" style="background: #28a745; margin-top: 10px; display: none;">📋 Copy Prompt</button>
+                    </div>
+
+                    <div class="section">
+                        <h3><span class="icon">6</span>How to Use</h3>
+                        <div style="font-size: 14px; color: #495057; line-height: 1.6;">
+                            <ol style="padding-left: 20px;">
+                                <li><strong>Fill out the form:</strong> Add your original scenario, new context, and preservation rules</li>
+                                <li><strong>Generate prompt:</strong> Click the button to create a customized AI prompt</li>
+                                <li><strong>Copy prompt:</strong> Use the copy button to get the prompt</li>
+                                <li><strong>Use with AI:</strong> Paste into ChatGPT, Claude, or any AI assistant</li>
+                                <li><strong>Get results:</strong> The AI will modify your scenario according to your specifications</li>
+                            </ol>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Initialize variables
+        let selectedRules = new Set();
+        
+        // Rule selection handling
+        document.getElementById('contentRules').addEventListener('click', function(e) {
+            if (e.target.classList.contains('tag')) {
+                const rule = e.target.dataset.rule;
+                if (selectedRules.has(rule)) {
+                    selectedRules.delete(rule);
+                    e.target.classList.remove('selected');
+                } else {
+                    selectedRules.add(rule);
+                    e.target.classList.add('selected');
+                }
+            }
+        });
+
+        // Set default rules
+        ['preserve-lessons', 'adapt-examples', 'keep-structure'].forEach(rule => {
+            selectedRules.add(rule);
+            document.querySelector(`[data-rule="${rule}"]`).classList.add('selected');
+        });
+
+        // Generate button handler
+        document.getElementById('generateButton').addEventListener('click', function() {
+            const originalScenario = document.getElementById('originalScenario').value.trim();
+            const newScenario = document.getElementById('newScenario').value.trim();
+            const preserveText = document.getElementById('preserveText').value.trim();
+
+            if (!originalScenario || !newScenario) {
+                alert('Please provide both the original scenario and new scenario context.');
+                return;
+            }
+
+            generateAIPrompt(originalScenario, newScenario, preserveText, selectedRules);
+        });
+
+        // Copy button handler
+        document.getElementById('copyButton').addEventListener('click', function() {
+            const outputText = document.getElementById('outputText').textContent;
+            navigator.clipboard.writeText(outputText).then(function() {
+                const button = document.getElementById('copyButton');
+                const originalText = button.textContent;
+                button.textContent = '✅ Copied!';
+                setTimeout(() => {
+                    button.textContent = originalText;
+                }, 2000);
+            });
+        });
+
+        function generateAIPrompt(original, newContext, preserve, rules) {
+            // Show loading
+            document.getElementById('loadingIndicator').style.display = 'block';
+            document.getElementById('outputText').style.display = 'none';
+            document.getElementById('copyButton').style.display = 'none';
+            document.getElementById('generateButton').disabled = true;
+
+            // Generate the AI prompt
+            setTimeout(() => {
+                const prompt = buildAIPrompt(original, newContext, preserve, rules);
+                
+                // Hide loading and show result
+                document.getElementById('loadingIndicator').style.display = 'none';
+                document.getElementById('outputText').style.display = 'block';
+                document.getElementById('outputText').textContent = prompt;
+                document.getElementById('copyButton').style.display = 'block';
+                document.getElementById('generateButton').disabled = false;
+            }, 1000);
+        }
+
+        function buildAIPrompt(original, newContext, preserve, rules) {
+            const preserveLines = preserve.split('\n').filter(line => line.trim());
+            const rulesArray = Array.from(rules);
+            
+            let prompt = `I need you to modify a scenario by adapting it to a new context while following specific preservation rules.
+
+**ORIGINAL SCENARIO:**
+"${original}"
+
+**NEW CONTEXT:**
+Adapt this scenario for: ${newContext}
+
+**MODIFICATION RULES:**`;
+
+            // Add rules
+            rulesArray.forEach(rule => {
+                switch(rule) {
+                    case 'preserve-lessons':
+                        prompt += '\n- PRESERVE: Keep all core lessons, principles, and learning objectives exactly the same';
+                        break;
+                    case 'adapt-examples':
+                        prompt += '\n- ADAPT: Change specific examples, industry terms, and context-specific details to fit the new scenario';
+                        break;
+                    case 'keep-structure':
+                        prompt += '\n- STRUCTURE: Maintain the same paragraph structure, sentence flow, and overall organization';
+                        break;
+                    case 'maintain-tone':
+                        prompt += '\n- TONE: Keep the same writing style, formality level, and voice throughout';
+                        break;
+                    case 'update-terminology':
+                        prompt += '\n- TERMINOLOGY: Replace industry-specific terms with equivalent terms from the new context';
+                        break;
+                }
+            });
+
+            // Add preserve unchanged section
+            if (preserveLines.length > 0) {
+                prompt += '\n\n**KEEP EXACTLY UNCHANGED:**\nThe following text must remain word-for-word identical:';
+                preserveLines.forEach(line => {
+                    if (line.trim()) {
+                        prompt += `\n- "${line.trim()}"`;
+                    }
+                });
+            }
+
+            prompt += `\n\n**INSTRUCTIONS:**
+1. Read the original scenario carefully to understand its core message and purpose
+2. Adapt all context-specific elements (industry, terminology, examples) to fit "${newContext}"
+3. Ensure the fundamental lessons and principles remain intact
+4. Keep any specified text exactly unchanged
+5. Make sure the adapted scenario is realistic and relevant to the new context
+6. Maintain the same level of detail and complexity as the original
+
+Please provide the modified scenario now:`;
+
+            return prompt;
+        }
+    </script>
+</body>
+</html>
