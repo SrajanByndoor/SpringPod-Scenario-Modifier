@@ -275,7 +275,7 @@
 <body>
     <div class="container">
         <div class="header">
-            <h1>🔄 AI Scenario Modifier</h1>
+            <h1>AI Scenario Modifier: Prompt Generator</h1>
             <p>Transform scenarios while preserving core messages and lessons</p>
         </div>
 
@@ -326,9 +326,9 @@
                         <h3><span class="icon">5</span>AI Prompt Generator</h3>
                         <div class="output-section" id="outputSection">
                             <div class="loading" id="loadingIndicator">
-                                🤔 Generating your custom AI prompt...
+                                Generating your custom AI prompt.
                             </div>
-                            <div id="outputText">Your AI prompt will appear here. Copy it and use with ChatGPT, Claude, or any AI assistant...</div>
+                            <div id="outputText">Your AI prompt will appear here. Copy it and use with ChatGPT, Claude, or any AI assistant.</div>
                         </div>
                         <button class="button" id="generateButton">Generate AI Prompt</button>
                         <button class="button" id="copyButton" style="background: #28a745; margin-top: 10px; display: none;">📋 Copy Prompt</button>
@@ -474,8 +474,9 @@ Adapt this scenario for: ${newContext}
 4. Keep any specified text exactly unchanged
 5. Make sure the adapted scenario is realistic and relevant to the new context
 6. Maintain the same level of detail and complexity as the original
+7. Do not use em dashes (—) or en dashes (–); rewrite sentences to avoid them completely
 
-Please provide the modified scenario now:`;
+Please provide the modified scenario now without any other extra context`;
 
             return prompt;
         }
